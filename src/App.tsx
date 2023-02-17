@@ -7,8 +7,8 @@ import { useDebounce } from "./hooks/useDebounce";
 interface Pagination {
   current: number; // current item of the list
   offset: number; // how much items do you want to bring when the user scrolls
-  loading: boolean; // if it is loading
-  infinity: boolean; // if it is loading
+  loading: boolean; // the initial loading
+  infinity: boolean; // if it is loading more items by scroll
   hasMore: boolean; // if it has more items to load
 }
 
@@ -38,7 +38,6 @@ const fakeApiCall = async (
 
 function App() {
   const [data, setData] = useState<Item[]>([]);
-
   const [pagination, setPagination] = useState<Pagination>(DEFAULT_PAGINATION);
 
   const debouncedPagination = useDebounce(pagination, 500);
@@ -82,13 +81,13 @@ function App() {
         ...currPagination,
         loading: false,
         infinity: false,
-        hasMore: true,
+        hasMore: true, // you can do some validation to check if there is more items to bring, the update this flag
       }));
     }
   };
 
   useEffect(() => {
-    let ignore = false;
+    let ignore = false; // flag to prevent calling the function twice due to new rules of React 18
 
     if (!ignore) {
       fetchData(pagination.current !== DEFAULT_PAGINATION.current);
